@@ -241,11 +241,12 @@ const WILD = "coringa";
 const CATS = [
   {id:"escapada", n:"Escapadas"},
   {id:"postal", n:"Rio cartão-postal"},
+  {id:"cultura", n:"Cultura"},
   {id:"comer", n:"Comer bem"},
   {id:"aventura", n:"Aventuras"},
   {id:"casa", n:"Em casa"}
 ];
-const UNLOCK = {"ilhagrande": 0, "corcovado": 0, "pao": 0, "musa": 0, "arpoador": 0, "cafe": 0, "filme": 0, "massagem": 0, "cartinha": 0, "diasim": 0, "grumari": 1, "skylab": 0, "jogos": 1, "nusa": 0, "doces": 2, "presente": 2, "paraty": 3, "piquenique": 3, "domingo": 3, "camolese": 0, "surpresa": 4, "xian": 0, "radical": 5, "louca": 5, "buzios": 6, "offline": 6, "bira": 0, "tematico": 0, "senado": 0, "gps": 8, "nada": 8, "arraial": 9, "turistas": 9, "flordoceu": 0, "aventura": 10, "desculpas": 11, "coringa": 11};
+const UNLOCK = {"ilhagrande": 0, "corcovado": 0, "pao": 0, "musa": 0, "arpoador": 0, "cafe": 0, "filme": 0, "massagem": 0, "cartinha": 0, "diasim": 0, "grumari": 1, "skylab": 0, "jogos": 1, "nusa": 0, "doces": 2, "presente": 2, "paraty": 3, "piquenique": 3, "domingo": 3, "camolese": 0, "surpresa": 4, "xian": 0, "radical": 5, "louca": 5, "buzios": 6, "offline": 6, "bira": 0, "tematico": 0, "senado": 0, "gps": 8, "nada": 8, "arraial": 9, "turistas": 9, "flordoceu": 0, "aventura": 10, "desculpas": 11, "coringa": 11, "sitio": 0, "pontal": 0, "mam": 0, "mar": 1, "theatro": 2, "mac": 4, "ccbb": 5, "bhering": 7};
 const VALES = [
   {c:"escapada", id:"ilhagrande", e:"🏝️", t:"Vale um fim de semana na Ilha Grande", d:"Barco saindo de Angra ou Conceição de Jacareí, praia de Lopes Mendes e pousada pé na areia. Você escolhe a data, eu reservo."},
   {c:"escapada", id:"paraty", e:"⛵", t:"Vale um fim de semana em Paraty", d:"Centro histórico de pedra, passeio de escuna pelas ilhas e jantar à luz de vela."},
@@ -259,6 +260,14 @@ const VALES = [
   {c:"postal", id:"piquenique", e:"🧺", t:"Vale um piquenique no Parque Lage com tudo preparado por mim", d:"Toalha, cesta montada e comidinhas que você gosta. Você só aparece."},
   {c:"postal", id:"turistas", e:"📸", t:"Vale um dia de turistas no Rio, com câmera, mapa e tudo", d:"Roteiro de quem acabou de chegar: museu, mirante, comida típica e muita foto."},
 
+  {c:"cultura", id:"sitio", e:"🌿", t:"Vale uma visita guiada ao Sítio Burle Marx", d:"Patrimônio da Unesco a uns 20 minutos de casa, em Guaratiba. Visita guiada de 1h30, de terça a sábado. Precisa agendar, e o ingresso é pago em dinheiro."},
+  {c:"cultura", id:"pontal", e:"🪆", t:"Vale uma tarde no Museu do Pontal", d:"Arte popular brasileira num prédio lindo na Barra, de quinta a domingo. Entrada gratuita, com contribuição sugerida."},
+  {c:"cultura", id:"mam", e:"🏛️", t:"Vale uma exposição no MAM e fim de tarde nos jardins do Aterro", d:"Entrada gratuita, de quarta a domingo. Depois, pôr do sol no Aterro com o Pão de Açúcar de frente."},
+  {c:"cultura", id:"mar", e:"🖼️", t:"Vale uma tarde no MAR, com a vista do terraço", d:"Arte e história do Rio na Praça Mauá, e lá em cima a vista da Baía. Às terças a entrada é gratuita; às quartas fecha."},
+  {c:"cultura", id:"theatro", e:"🎭", t:"Vale uma visita guiada ao Theatro Municipal e doces na Confeitaria Colombo", d:"Visitas de quarta a sábado, com ingresso vendido só na bilheteria no dia. Depois, a Colombo fica a poucas quadras."},
+  {c:"cultura", id:"mac", e:"🛸", t:"Vale uma travessia de barca e o MAC de Niterói", d:"Barca saindo da Praça XV, o Rio visto do outro lado da baía e o disco voador do Niemeyer."},
+  {c:"cultura", id:"ccbb", e:"📚", t:"Vale uma tarde no Centro: CCBB e Real Gabinete Português de Leitura", d:"A exposição do momento no CCBB e, perto dali, uma das bibliotecas mais bonitas do mundo."},
+  {c:"cultura", id:"bhering", e:"🎨", t:"Vale um sábado de ateliês abertos na Fábrica Bhering", d:"Uma antiga fábrica de chocolate tomada por artistas, no Santo Cristo. Nos sábados de portas abertas tem arte, música e comida."},
   {c:"comer", id:"musa", e:"🥐", t:"Vale um café da manhã no Musa, em São Conrado", d:"Pé na areia com a Pedra da Gávea de frente. A gente chega cedo e pede de tudo."},
   {c:"comer", id:"nusa", e:"🌺", t:"Vale um brunch no Nusa Café, em Ipanema", d:"Um pedaço de Bali em Ipanema: bowls, cafés bonitos e fotos para o feed."},
   {c:"comer", id:"skylab", e:"🍸", t:"Vale um drink no Skylab, no 30º andar em Copacabana", d:"A praia de Copacabana inteira lá embaixo. Vamos no fim da tarde pra pegar a luz bonita."},
@@ -441,7 +450,9 @@ const TIKTOK={ilhagrande:"Ilha Grande RJ",paraty:"Paraty RJ",buzios:"Búzios RJ"
  corcovado:"Cristo Redentor Corcovado",pao:"Clássico Sunset Club Pão de Açúcar",grumari:"Praia de Grumari",arpoador:"pôr do sol Arpoador",
  piquenique:"piquenique Parque Lage",musa:"Musa São Conrado",nusa:"Nusa Café Ipanema",skylab:"Skylab Copacabana",
  camolese:"Casa Camolese",xian:"Xian restaurante Rio",bira:"Bira Guaratiba",flordoceu:"Flor do Céu restaurante Rio",
- senado:"Armazém Senado Rua do Senado",turistas:"o que fazer no Rio de Janeiro"};
+ senado:"Armazém Senado Rua do Senado",
+ sitio:"Sítio Burle Marx",pontal:"Museu do Pontal",mam:"MAM Rio",mar:"Museu de Arte do Rio MAR",theatro:"visita guiada Theatro Municipal Rio",
+ mac:"MAC Niterói barca",ccbb:"Real Gabinete Português de Leitura",bhering:"Fábrica Bhering",turistas:"o que fazer no Rio de Janeiro"};
 const RESERVA={
  corcovado:["Comprar ingresso do trem","https://www.tremdocorcovado.rio/comprar"],
  pao:["Comprar ingresso do bondinho","https://bondinho.com.br/pt/comprar-ingresso"],
@@ -449,7 +460,11 @@ const RESERVA={
  camolese:["Reservar mesa","https://bit.ly/casacamolese-reservas"],
  flordoceu:["Reservar mesa (obrigatório)","https://flordoceu.leadsfood.app"],
  senado:["Ligar para reservar o Lilia","tel:+552138525423"],
- xian:["Ligar para reservar","tel:+552123037080"]
+ xian:["Ligar para reservar","tel:+552123037080"],
+ sitio:["Agendar a visita","https://sitio-roberto-burle-marx.reservio.com/"],
+ pontal:["Pegar ingresso gratuito","https://museudopontal.org.br/visite/"],
+ mam:["Reservar ingresso gratuito","https://mamrio.byinti.com/#/ticket/"],
+ mar:["Comprar ingresso","https://museudeartedorio.byinti.com/"]
 };
 function resBtn(id){const r=RESERVA[id];if(!r)return null;
   const a=document.createElement("a");a.className="btn res";a.href=r[1];a.rel="noopener";
