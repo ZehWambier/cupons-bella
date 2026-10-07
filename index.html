@@ -159,6 +159,41 @@ footer{font-size:12px;color:var(--muted);text-align:center;line-height:1.5}
 .intro.tear{animation:tear .7s ease-in forwards}
 @keyframes tear{0%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 100% 0);opacity:.6}}
 @media (prefers-reduced-motion:reduce){.usedmark.fresh,.stamped,.intro.tear{animation:none}}
+
+/* Álbum */
+#sheet-extra{display:flex;flex-direction:column;gap:10px}
+#sheet-extra:empty{display:none}
+.panel{max-height:92vh;overflow-y:auto}
+.pw{display:flex;flex-direction:column;gap:8px}
+.pw label,.panel label[for="ph-leg"]{font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--muted)}
+.pw input{font:inherit;font-size:16px;padding:12px;border-radius:12px;border:2px solid #2a141426;background:#fff;color:var(--ink)}
+.pw-err{color:var(--red-deep);font-weight:700;font-size:14px}
+.pick{display:flex;flex-direction:column;align-items:center;gap:4px;border:2px dashed var(--red);border-radius:16px;padding:18px;cursor:pointer;background:#fff;text-align:center}
+.pick span{font-size:34px;line-height:1}.pick b{font-family:var(--display);color:var(--red);font-size:16px}.pick small{color:var(--muted);font-weight:700}
+.thumbs{display:flex;gap:6px;overflow-x:auto}.thumbs:empty{display:none}
+.thumbs img{width:72px;height:72px;object-fit:cover;border-radius:10px;flex:none}
+.ph-status,.saved-msg{font-weight:700;color:var(--muted);text-align:center;min-height:1em;margin:0}
+.album{list-style:none;display:flex;flex-direction:column;gap:22px}
+.album-intro{font-family:var(--hand);font-size:22px;color:var(--red-deep);text-align:center;margin:0}
+.album-head{font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.04em}
+.moment{display:flex;flex-direction:column;gap:10px}
+.m-head{display:flex;gap:12px;align-items:center}
+.m-emo{font-size:30px;width:52px;height:52px;border-radius:50%;background:var(--red);display:grid;place-items:center;flex:none}
+.m-date{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--red)}
+.moment h3{font-family:var(--display);font-size:16px;line-height:1.1;margin:2px 0 0;color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;border-radius:14px;overflow:hidden}
+.grid .ph{padding:0;border:0;background:#e9ddd2;aspect-ratio:1;cursor:pointer;display:block;max-width:100%}
+.grid .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.grid .ph:focus-visible{outline:3px solid var(--red);outline-offset:-3px}
+.m-leg{font-family:var(--hand);font-size:21px;line-height:1.2;color:var(--red-deep);margin:0}
+.viewer{position:fixed;inset:0;z-index:30;background:#120808f2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.viewer img{max-width:100%;max-height:75vh;border-radius:12px;object-fit:contain}
+.v-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;color:#fbe9de;font-family:var(--hand);font-size:22px;text-align:center}
+.v-bar span{flex-basis:100%}
+.v-bar .btn{padding:10px 16px;font-size:14px}
+.v-bar .btn.ghost{color:#fbe9de;border-color:#fbe9de66}
+.v-confirm{font-family:var(--body);font-size:14px;font-weight:700;flex-basis:auto!important}
 @media (prefers-reduced-motion:reduce){.panel{animation:none}.ticket{transition:none}}
 @media (max-width:360px){.ticket{grid-template-columns:50px 16px 12px 1fr 72px}.seal{width:64px;height:64px}.text{font-size:15px}.text.long{font-size:13px}}
 </style>
@@ -293,7 +328,7 @@ function wildVale(){
 }
 
 function renderTabs(){
-  const opts=[["all","Todos"],...CATS.map(c=>[c.id,c.n]),["used","Usados"]];
+  const opts=[["all","Todos"],["album","📷 Nosso ano"],...CATS.map(c=>[c.id,c.n]),["used","Usados"]];
   const t=document.getElementById("tabs");t.innerHTML="";
   opts.forEach(([id,n])=>{const b=document.createElement("button");b.className="tab";b.id="tab-"+id;b.textContent=n;
     b.setAttribute("aria-pressed",filter===id);b.addEventListener("click",()=>{filter=id;renderTabs();render()});t.appendChild(b)});
@@ -317,6 +352,7 @@ function ticketEl(v){
 }
 function render(){
   renderCover();
+  if(filter==="album"){renderAlbum();return}
   const all=[...VALES,wildVale()];
   const book=document.getElementById("book");book.innerHTML="";
   let list;
@@ -450,6 +486,8 @@ function usedActions(v,a,x,justNow){
   w.innerHTML=`<label>${isTrip?"Sexta da viagem":"Dia"}<input type="date" id="cal-date" value="${nextSaturday()}"></label>`+
     (isTrip?"":`<label>Horário<input type="time" id="cal-time" value="19:00"></label>`);
   x.appendChild(w);
+  {const n=fotosDoVale(v.id).length;
+   a.append(btn(n?`📷 Mais fotos deste momento (${n} no álbum)`:"📷 Registrar o momento","primary",()=>openPhoto(v)))}
   const share=btn("Mandar o cupom pro Zé","wa",()=>shareTicket(v,waLink(v)));a.append(share);
   const h0=document.createElement("div");h0.className="hint";h0.innerHTML=`Escolha o WhatsApp e a conversa com o Zé. Não abriu? <a href="${waLink(v)}" target="_blank" rel="noopener">Mandar só o texto</a>`;a.append(h0);
   const cal=linkBtn("Marcar na agenda de nós dois","cal","#");
@@ -502,6 +540,114 @@ sheet.addEventListener("click",e=>{if(e.target===sheet)closeSheet()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet()});
 document.getElementById("luck").addEventListener("click",lucky);
 
+
+// ===== Álbum (Supabase) =====
+const ALBUM_URL="https://jzsuqorksqumwhpluvnh.supabase.co/functions/v1/album";
+let fotosCache=null, fotosCarregando=null;
+function fotosDoVale(id){return (fotosCache||[]).filter(f=>f.vale_id===id)}
+async function api(body){
+  const r=await fetch(ALBUM_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.erro||"rede"),{status:r.status});return j;
+}
+async function carregarFotos(force){
+  if(!state.senha)return [];
+  if(fotosCache&&!force)return fotosCache;
+  if(!fotosCarregando)fotosCarregando=api({acao:"listar",senha:state.senha}).then(j=>{fotosCache=j.fotos||[];return fotosCache})
+    .catch(e=>{if(e.status===401){state.senha="";save()}throw e}).finally(()=>{fotosCarregando=null});
+  return fotosCarregando;
+}
+function senhaForm(onOk){
+  const w=document.createElement("div");w.className="pw";
+  w.innerHTML=`<label for="pw-in">Senha do álbum</label><input id="pw-in" type="password" autocomplete="current-password" placeholder="a palavra secreta de vocês"><div class="pw-err" hidden>Senha não confere. Tenta de novo.</div>`;
+  const inp=w.querySelector("input"),err=w.querySelector(".pw-err");
+  const go=btn("Entrar no álbum","primary",async()=>{
+    go.disabled=true;go.textContent="Conferindo…";err.hidden=true;
+    try{await api({acao:"verificar",senha:inp.value});state.senha=inp.value.trim();save();onOk()}
+    catch(e){err.textContent=e.status===401?"Senha não confere. Tenta de novo.":"Sem conexão agora. Tenta de novo em instantes.";err.hidden=false;go.disabled=false;go.textContent="Entrar no álbum"}
+  });
+  inp.addEventListener("keydown",e=>{if(e.key==="Enter")go.click()});
+  w.appendChild(go);return w;
+}
+function comprimir(file){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file);const img=new Image();
+    img.onload=()=>{const M=1600;let w=img.naturalWidth,h=img.naturalHeight;const k=Math.min(1,M/Math.max(w,h));w=Math.round(w*k);h=Math.round(h*k);
+      const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);URL.revokeObjectURL(url);
+      c.toBlob(b=>b?res({blob:b,w,h}):rej(new Error("conv")),"image/jpeg",.82)};
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("formato"))};img.src=url;
+  });
+}
+function openPhoto(v){
+  setHead("📷","Registrar o momento",v.t);
+  const x=document.getElementById("sheet-extra");x.innerHTML="";
+  const a=document.getElementById("sheet-actions");a.innerHTML="";
+  if(!state.senha){x.appendChild(senhaForm(()=>openPhoto(v)));a.append(btn("Voltar","ghost",()=>openSheet(v.id)));sheet.hidden=false;return}
+  x.innerHTML=`<label class="pick" for="ph-in"><span>📸</span><b>Tirar foto ou escolher da galeria</b><small>Pode escolher várias</small></label>
+    <input id="ph-in" type="file" accept="image/*" multiple hidden>
+    <div class="thumbs" id="ph-prev"></div>
+    <label for="ph-leg">Legenda (opcional)</label><textarea id="ph-leg" maxlength="280" placeholder="o que foi mais gostoso desse dia?"></textarea>
+    <div class="ph-status" id="ph-st" aria-live="polite"></div>`;
+  const inp=x.querySelector("#ph-in"),prev=x.querySelector("#ph-prev"),st=x.querySelector("#ph-st");let files=[];
+  inp.addEventListener("change",()=>{files=[...inp.files];prev.innerHTML="";files.forEach(f=>{const i=document.createElement("img");i.src=URL.createObjectURL(f);i.alt="";prev.appendChild(i)});send.disabled=!files.length});
+  const send=btn("Guardar no nosso álbum","primary",async()=>{
+    send.disabled=true;const leg=x.querySelector("#ph-leg").value.trim();let ok=0,fail=0;
+    for(let i=0;i<files.length;i++){
+      st.textContent=`Enviando ${i+1} de ${files.length}…`;
+      try{const {blob,w,h}=await comprimir(files[i]);const fd=new FormData();
+        fd.append("senha",state.senha);fd.append("vale_id",v.id);fd.append("vale_titulo",v.t);fd.append("legenda",leg);fd.append("largura",w);fd.append("altura",h);
+        fd.append("foto",blob,"foto.jpg");
+        const r=await fetch(ALBUM_URL,{method:"POST",body:fd});if(!r.ok)throw new Error(String(r.status));ok++}
+      catch(e){fail++}
+    }
+    fotosCache=null;carregarFotos(true).catch(()=>{});
+    if(!fail){x.innerHTML=`<div class="stamped">${ok===1?"FOTO GUARDADA!":ok+" FOTOS GUARDADAS!"}</div><p class="saved-msg">Já está no álbum “Nosso ano”.</p>`;
+      a.innerHTML="";a.append(btn("Ver o álbum","primary",()=>{closeSheet();filter="album";renderTabs();render();window.scrollTo({top:0,behavior:"smooth"})}),btn("Voltar ao vale","ghost",()=>openSheet(v.id)));
+      try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}}
+    else{st.textContent=ok?`${ok} enviada(s), ${fail} não foi(ram). Confira a internet e tente as que faltaram.`:"Não consegui enviar. Confira a internet e tente de novo.";send.disabled=false}
+  });
+  send.disabled=true;
+  a.append(send,btn("Voltar","ghost",()=>openSheet(v.id)));
+  sheet.hidden=false;
+}
+async function renderAlbum(){
+  const book=document.getElementById("book");book.innerHTML="";
+  document.getElementById("luck").hidden=true;document.getElementById("next").hidden=true;
+  const li=document.createElement("li");li.className="album";book.appendChild(li);
+  if(!state.senha){li.innerHTML=`<p class="album-intro">Aqui fica o nosso ano: as fotos de cada vale usado, em ordem. No fim, vira um livro.</p>`;li.appendChild(senhaForm(()=>render()));return}
+  li.innerHTML=`<p class="empty">Abrindo o álbum…</p>`;
+  let fotos;try{fotos=await carregarFotos()}catch(e){
+    if(!state.senha){render();return}
+    li.innerHTML=`<p class="empty">Não consegui abrir o álbum agora. Confira a internet.</p>`;li.appendChild(btn("Tentar de novo","ghost",()=>{fotosCache=null;render()}));return}
+  if(filter!=="album")return;
+  if(!fotos.length){li.innerHTML=`<p class="empty">O álbum ainda está em branco. Depois de usar um vale, toque em “📷 Registrar o momento”.</p>`;return}
+  const grupos=[];const idx={};
+  fotos.forEach(f=>{if(!(f.vale_id in idx)){idx[f.vale_id]=grupos.length;grupos.push({id:f.vale_id,t:f.vale_titulo,fotos:[]})}grupos[idx[f.vale_id]].fotos.push(f)});
+  li.innerHTML=`<div class="album-head"><b>${fotos.length} ${fotos.length===1?"foto":"fotos"}</b> · ${grupos.length} ${grupos.length===1?"momento":"momentos"}</div>`;
+  grupos.forEach(g=>{
+    const v=find(g.id);const sec=document.createElement("section");sec.className="moment";
+    const d=new Date(g.fotos[0].created_at);
+    sec.innerHTML=`<div class="m-head"><span class="m-emo">${v?v.e:"📷"}</span><div><div class="m-date">${d.toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"})}</div><h3>${esc(v?v.t:(g.t||""))}</h3></div></div><div class="grid"></div>`;
+    const grid=sec.querySelector(".grid");
+    g.fotos.forEach(f=>{const b=document.createElement("button");b.className="ph";b.setAttribute("aria-label","Abrir foto");
+      b.innerHTML=`<img loading="lazy" src="${f.url}" alt="${esc(f.legenda||"")}">`;b.addEventListener("click",()=>openViewer(f));grid.appendChild(b)});
+    const legs=[...new Set(g.fotos.map(f=>f.legenda).filter(Boolean))];
+    if(legs.length){const p=document.createElement("p");p.className="m-leg";p.textContent=legs.join(" · ");sec.appendChild(p)}
+    li.appendChild(sec);
+  });
+}
+const viewer=document.createElement("div");viewer.className="viewer";viewer.hidden=true;document.body.appendChild(viewer);
+function openViewer(f){
+  viewer.innerHTML=`<img src="${f.url}" alt=""><div class="v-bar"><span>${esc(f.legenda||"")}</span></div>`;
+  const bar=viewer.querySelector(".v-bar");
+  const del=btn("Apagar","ghost v-del",()=>{
+    del.remove();const c=document.createElement("span");c.className="v-confirm";c.textContent="Apagar mesmo?";
+    const yes=btn("Sim, apagar","primary",async()=>{yes.disabled=true;try{await api({acao:"apagar",id:f.id,senha:state.senha});fotosCache=null;viewer.hidden=true;render()}catch(e){c.textContent="Não consegui apagar agora."}});
+    bar.append(c,yes)});
+  bar.append(btn("Fechar","ghost v-close",()=>{viewer.hidden=true}),del);
+  viewer.hidden=false;
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")viewer.hidden=true});
+
 // Abertura
 const intro=document.getElementById("intro");
 if(PHOTO){const p=document.getElementById("intro-photo");p.style.backgroundImage=`url(${PHOTO})`;p.textContent=""}
@@ -515,6 +661,7 @@ document.getElementById("open-seal").addEventListener("click",()=>{
 
 renderTabs();
 render();
+if(state.senha)carregarFotos().catch(()=>{});
 </script>
 
 </body>
