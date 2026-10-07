@@ -398,6 +398,13 @@ async function shareTicket(v,fallbackHref){
   }catch(e){if(e&&e.name==="AbortError")return}
   window.location.href=fallbackHref;
 }
+const TIKTOK={ilhagrande:"Ilha Grande RJ",paraty:"Paraty RJ",buzios:"Búzios RJ",arraial:"Arraial do Cabo",
+ corcovado:"Cristo Redentor Corcovado",pao:"Clássico Sunset Club Pão de Açúcar",grumari:"Praia de Grumari",arpoador:"pôr do sol Arpoador",
+ piquenique:"piquenique Parque Lage",musa:"Musa São Conrado",nusa:"Nusa Café Ipanema",skylab:"Skylab Copacabana",
+ camolese:"Casa Camolese",xian:"Xian restaurante Rio",bira:"Bira Guaratiba",flordoceu:"Flor do Céu restaurante Rio",
+ senado:"Armazém Senado Rua do Senado",turistas:"o que fazer no Rio de Janeiro"};
+function ttBtn(id){const q=TIKTOK[id];if(!q)return null;
+  return linkBtn("Ver no TikTok","ghost","https://www.tiktok.com/search?q="+encodeURIComponent(q))}
 function waLink(v){return `https://wa.me/${WHATSAPP}?text=`+encodeURIComponent(`Amor, quero usar o vale: ${v.t.replace(/^Vale\s+/,"")} 💌`)}
 function pad(n){return String(n).padStart(2,"0")}
 function calLink(v,date,time){
@@ -427,6 +434,7 @@ function usedActions(v,a,x,justNow){
   x.querySelectorAll("input").forEach(i=>i.addEventListener("input",upd));upd();
   a.append(cal);
   const h=document.createElement("div");h.className="hint";h.textContent="A agenda abre no Google Agenda com o convite para os dois.";a.append(h);
+  {const t=ttBtn(v.id);if(t)a.append(t)}
   a.append(btn("Fechar","ghost",closeSheet));
 }
 function openSheet(id,mode){
@@ -452,6 +460,7 @@ function openSheet(id,mode){
     a.append(btn("Ainda não","ghost",()=>openSheet(id)));
   }else{
     a.append(btn("Usar este vale","primary",()=>openSheet(id,"confirm")));
+    {const t=ttBtn(id);if(t)a.append(t)}
     if(id===WILD)a.append(btn("Reescrever pedido","ghost",()=>openSheet(id,"write")));
     if(mode==="lucky")a.append(btn("Sortear outro","ghost",lucky));
     a.append(btn("Voltar","ghost",closeSheet));
