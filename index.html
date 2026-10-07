@@ -471,16 +471,23 @@ const RESERVA={
 function resBtn(id){const r=RESERVA[id];if(!r)return null;
   const a=document.createElement("a");a.className="btn res";a.href=r[1];a.rel="noopener";
   if(!r[1].startsWith("tel:"))a.target="_blank";a.textContent=r[0];return a}
-function ttHref(q){
-  const web="https://www.tiktok.com/search?q="+encodeURIComponent(q);
-  if(/Android/i.test(navigator.userAgent))
-    return "intent://www.tiktok.com/search?q="+encodeURIComponent(q)+"#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url="+encodeURIComponent(web)+";end";
-  return web;
+function abrirTikTok(q){
+  const kw=encodeURIComponent(q);
+  const web="https://www.tiktok.com/search?q="+kw;
+  if(/Android/i.test(navigator.userAgent)){
+    location.href="intent://search?keyword="+kw+"#Intent;scheme=snssdk1233;package=com.zhiliaoapp.musically;S.browser_fallback_url="+encodeURIComponent(web)+";end";
+    return;
+  }
+  // iPhone: esquema do próprio app do TikTok; se não abrir em 1,6s, cai na busca pela web
+  let saiu=false;const marca=()=>{saiu=true};
+  document.addEventListener("visibilitychange",marca,{once:true});window.addEventListener("pagehide",marca,{once:true});
+  location.href="snssdk1233://search?keyword="+kw;
+  setTimeout(()=>{if(!saiu&&!document.hidden)location.href=web},1600);
 }
 function ttBtn(id){const q=TIKTOK[id];if(!q)return null;
-  const a=document.createElement("a");a.className="btn tt";a.href=ttHref(q);a.rel="noopener";
-  a.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 8l6 4-6 4z" fill="currentColor"/></svg><span>Ver vídeos no TikTok</span>';
-  return a}
+  const b=document.createElement("button");b.className="btn tt";b.type="button";
+  b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 8l6 4-6 4z" fill="currentColor"/></svg><span>Abrir no TikTok</span>';
+  b.addEventListener("click",()=>abrirTikTok(q));return b}
 function waLink(v){return `https://wa.me/${WHATSAPP}?text=`+encodeURIComponent(`Amor, quero usar o vale: ${v.t.replace(/^Vale\s+/,"")} 💌`)}
 function pad(n){return String(n).padStart(2,"0")}
 function calLink(v,date,time){
