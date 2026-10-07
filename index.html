@@ -161,6 +161,8 @@ footer{font-size:12px;color:var(--muted);text-align:center;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.usedmark.fresh,.stamped,.intro.tear{animation:none}}
 
 /* Álbum */
+.sync{font:inherit;font-size:13px;font-weight:800;color:var(--ink);background:#fff;border:2px dashed #2a141440;border-radius:12px;padding:10px 12px;cursor:pointer;text-align:center}
+.sync:focus-visible{outline:3px solid var(--red);outline-offset:2px}
 .quem{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .quem span{font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--muted)}
 .quem button{font:inherit;font-weight:800;font-size:14px;border-radius:99px;padding:7px 16px;border:2px solid #2a141426;background:transparent;color:var(--ink);cursor:pointer}
@@ -217,6 +219,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;line-height:1.5}
 
   <div class="bar"><div class="count" id="count"></div></div>
   <div class="tabs" id="tabs" role="group" aria-label="Filtrar vales"></div>
+  <button class="sync" id="sync" hidden>🔗 Sincronizar vales usados entre o celular da Bella e do Zé</button>
   <p class="next" id="next" hidden></p>
   <button class="luck" id="luck">Não sei qual escolher, sorteia um</button>
 
@@ -543,14 +546,14 @@ function openSheet(id,mode){
   }else if(id===WILD&&(mode==="write"||!state.wish)){
     x.innerHTML=`<label for="wish">Vale…</label><textarea id="wish" maxlength="90" placeholder="um fim de semana em Petrópolis"></textarea>`;
     const ta=x.querySelector("textarea");ta.value=state.wish;
-    const ok=btn("Salvar meu cupom","primary",()=>{state.wish=ta.value.trim().replace(/^vale\s+/i,"");save();render();openSheet(WILD)});
+    const ok=btn("Salvar meu cupom","primary",()=>{state.wish=ta.value.trim().replace(/^vale\s+/i,"");save();sincronizar(true);render();openSheet(WILD)});
     ok.disabled=!ta.value.trim();ta.addEventListener("input",()=>ok.disabled=!ta.value.trim());
     a.append(ok,btn("Voltar","ghost",closeSheet));
     sheet.hidden=false;ta.focus();return;
   }else if(mode==="confirm"){
     a.innerHTML=`<div class="confirm">Certeza? Depois de carimbado, não volta.</div>`;
     a.append(btn("Sim, quero esse!","primary",()=>{
-      state.used[id]=new Date().toISOString();save();fresh=id;
+      state.used[id]=new Date().toISOString();save();fresh=id;sincronizar();
       try{navigator.vibrate&&navigator.vibrate([30,40,90])}catch(e){}
       render();openSheet(id,"justnow")}));
     a.append(btn("Ainda não","ghost",()=>openSheet(id)));
@@ -597,7 +600,7 @@ function senhaForm(onOk){
   const inp=w.querySelector("input"),err=w.querySelector(".pw-err");
   const go=btn("Entrar no álbum","primary",async()=>{
     go.disabled=true;go.textContent="Conferindo…";err.hidden=true;
-    try{await api({acao:"verificar",senha:inp.value});state.senha=inp.value.trim();save();onOk()}
+    try{await api({acao:"verificar",senha:inp.value});state.senha=inp.value.trim();save();sincronizar();syncBanner();onOk()}
     catch(e){err.textContent=e.status===401?"Senha não confere. Tenta de novo.":"Sem conexão agora. Tenta de novo em instantes.";err.hidden=false;go.disabled=false;go.textContent="Entrar no álbum"}
   });
   inp.addEventListener("keydown",e=>{if(e.key==="Enter")go.click()});
@@ -706,6 +709,28 @@ function openViewer(f){
 }
 document.addEventListener("keydown",e=>{if(e.key==="Escape")viewer.hidden=true});
 
+// Sincroniza carimbos e o pedido do coringa entre os celulares
+let sincronizando=null;
+async function sincronizar(wishForcar){
+  if(!state.senha)return;
+  if(sincronizando)return sincronizando;
+  sincronizando=(async()=>{
+    try{
+      const j=await api({acao:"sync",senha:state.senha,carimbos:state.used,wish:state.wish||"",wish_forcar:!!wishForcar});
+      let mudou=false;
+      Object.entries(j.carimbos||{}).forEach(([k,v])=>{if(!state.used[k]||new Date(v)<new Date(state.used[k])){state.used[k]=v;mudou=true}});
+      if(j.wish&&j.wish!==state.wish&&!wishForcar){state.wish=j.wish;mudou=true}
+      if(mudou){save();if(sheet.hidden)render()}
+    }catch(e){if(e.status===401){state.senha="";save()}}
+    finally{sincronizando=null}
+  })();
+  return sincronizando;
+}
+function syncBanner(){
+  const el=document.getElementById("sync");if(!el)return;
+  el.hidden=!!state.senha;
+}
+
 // Abertura
 const intro=document.getElementById("intro");
 if(PHOTO){const p=document.getElementById("intro-photo");p.style.backgroundImage=`url(${PHOTO})`;p.textContent=""}
@@ -719,7 +744,14 @@ document.getElementById("open-seal").addEventListener("click",()=>{
 
 renderTabs();
 render();
-if(state.senha)carregarFotos().catch(()=>{});
+syncBanner();
+if(state.senha){carregarFotos().catch(()=>{});sincronizar()}
+document.getElementById("sync").addEventListener("click",()=>{
+  setHead("🔗","Sincronizar os vales","Com a senha do álbum, os vales usados e o pedido do coringa aparecem iguais no celular da Bella e no do Zé.");
+  const x=document.getElementById("sheet-extra");x.innerHTML="";const a=document.getElementById("sheet-actions");a.innerHTML="";
+  x.appendChild(senhaForm(async()=>{await sincronizar();syncBanner();closeSheet();render()}));a.append(btn("Agora não","ghost",closeSheet));sheet.hidden=false;
+});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&state.senha)sincronizar()});
 </script>
 
 </body>
