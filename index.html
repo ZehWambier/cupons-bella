@@ -161,6 +161,17 @@ footer{font-size:12px;color:var(--muted);text-align:center;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.usedmark.fresh,.stamped,.intro.tear{animation:none}}
 
 /* Álbum */
+.quem{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.quem span{font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--muted)}
+.quem button{font:inherit;font-weight:800;font-size:14px;border-radius:99px;padding:7px 16px;border:2px solid #2a141426;background:transparent;color:var(--ink);cursor:pointer}
+.quem button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.pick-list{display:flex;flex-direction:column;gap:6px;max-height:52vh;overflow-y:auto}
+.pick-h{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-top:8px}
+.pick-item{display:flex;align-items:center;gap:10px;text-align:left;font:inherit;background:#fff;border:2px solid #2a14141a;border-radius:12px;padding:10px 12px;cursor:pointer;color:var(--ink)}
+.pick-item span{font-size:22px;flex:none}.pick-item b{font-weight:700;font-size:14px;line-height:1.25}
+.pick-item:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.v-by{display:block;font-family:var(--body);font-size:12px;letter-spacing:.06em;opacity:.75;margin-top:4px}
+
 #sheet-extra{display:flex;flex-direction:column;gap:10px}
 #sheet-extra:empty{display:none}
 .panel{max-height:92vh;overflow-y:auto}
@@ -601,37 +612,58 @@ function comprimir(file){
     img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("formato"))};img.src=url;
   });
 }
-function openPhoto(v){
+function openPhoto(v,deAlbum){
   setHead("📷","Registrar o momento",v.t);
   const x=document.getElementById("sheet-extra");x.innerHTML="";
   const a=document.getElementById("sheet-actions");a.innerHTML="";
-  if(!state.senha){x.appendChild(senhaForm(()=>openPhoto(v)));a.append(btn("Voltar","ghost",()=>openSheet(v.id)));sheet.hidden=false;return}
+  const voltar=()=>deAlbum?openPicker():openSheet(v.id);
+  if(!state.senha){x.appendChild(senhaForm(()=>openPhoto(v,deAlbum)));a.append(btn("Voltar","ghost",voltar));sheet.hidden=false;return}
   x.innerHTML=`<label class="pick" for="ph-in"><span>📸</span><b>Tirar foto ou escolher da galeria</b><small>Pode escolher várias</small></label>
     <input id="ph-in" type="file" accept="image/*" multiple hidden>
     <div class="thumbs" id="ph-prev"></div>
+    <div class="quem" role="group" aria-label="Quem está postando"><span>Postando como</span><button type="button" data-q="Bella">Bella</button><button type="button" data-q="Zé">Zé</button></div>
     <label for="ph-leg">Legenda (opcional)</label><textarea id="ph-leg" maxlength="280" placeholder="o que foi mais gostoso desse dia?"></textarea>
     <div class="ph-status" id="ph-st" aria-live="polite"></div>`;
   const inp=x.querySelector("#ph-in"),prev=x.querySelector("#ph-prev"),st=x.querySelector("#ph-st");let files=[];
+  const qbs=[...x.querySelectorAll(".quem button")];const marcaQuem=()=>qbs.forEach(b=>b.setAttribute("aria-pressed",b.dataset.q===state.quem));
+  if(!state.quem)state.quem="Bella";marcaQuem();qbs.forEach(b=>b.addEventListener("click",()=>{state.quem=b.dataset.q;save();marcaQuem()}));
   inp.addEventListener("change",()=>{files=[...inp.files];prev.innerHTML="";files.forEach(f=>{const i=document.createElement("img");i.src=URL.createObjectURL(f);i.alt="";prev.appendChild(i)});send.disabled=!files.length});
   const send=btn("Guardar no nosso álbum","primary",async()=>{
     send.disabled=true;const leg=x.querySelector("#ph-leg").value.trim();let ok=0,fail=0;
     for(let i=0;i<files.length;i++){
       st.textContent=`Enviando ${i+1} de ${files.length}…`;
       try{const {blob,w,h}=await comprimir(files[i]);const fd=new FormData();
-        fd.append("senha",state.senha);fd.append("vale_id",v.id);fd.append("vale_titulo",v.t);fd.append("legenda",leg);fd.append("largura",w);fd.append("altura",h);
+        fd.append("senha",state.senha);fd.append("vale_id",v.id);fd.append("vale_titulo",v.t);fd.append("legenda",leg);fd.append("autor",state.quem||"");fd.append("largura",w);fd.append("altura",h);
         fd.append("foto",blob,"foto.jpg");
         const r=await fetch(ALBUM_URL,{method:"POST",body:fd});if(!r.ok)throw new Error(String(r.status));ok++}
       catch(e){fail++}
     }
     fotosCache=null;carregarFotos(true).catch(()=>{});
     if(!fail){x.innerHTML=`<div class="stamped">${ok===1?"FOTO GUARDADA!":ok+" FOTOS GUARDADAS!"}</div><p class="saved-msg">Já está no álbum “Nosso ano”.</p>`;
-      a.innerHTML="";a.append(btn("Ver o álbum","primary",()=>{closeSheet();filter="album";renderTabs();render();window.scrollTo({top:0,behavior:"smooth"})}),btn("Voltar ao vale","ghost",()=>openSheet(v.id)));
+      a.innerHTML="";a.append(btn("Ver o álbum","primary",()=>{closeSheet();filter="album";renderTabs();render();window.scrollTo({top:0,behavior:"smooth"})}),btn(deAlbum?"Fechar":"Voltar ao vale","ghost",()=>deAlbum?closeSheet():openSheet(v.id)));
       try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}}
     else{st.textContent=ok?`${ok} enviada(s), ${fail} não foi(ram). Confira a internet e tente as que faltaram.`:"Não consegui enviar. Confira a internet e tente de novo.";send.disabled=false}
   });
   send.disabled=true;
-  a.append(send,btn("Voltar","ghost",()=>openSheet(v.id)));
+  a.append(send,btn("Voltar","ghost",voltar));
   sheet.hidden=false;
+}
+
+function openPicker(){
+  setHead("📷","Adicionar fotos","De qual vale são essas fotos?");
+  const x=document.getElementById("sheet-extra");x.innerHTML="";
+  const a=document.getElementById("sheet-actions");a.innerHTML="";
+  const com=new Set((fotosCache||[]).map(f=>f.vale_id));
+  const all=[...VALES,wildVale()].filter(v=>isOpen(v.id)&&(v.id!==WILD||state.wish||com.has(WILD)));
+  const rank=v=>(com.has(v.id)?0:state.used[v.id]?1:2);
+  const lista=document.createElement("div");lista.className="pick-list";
+  [[0,"Já têm fotos"],[1,"Usados"],[2,"Outros vales liberados"]].forEach(([r,titulo])=>{
+    const vs=all.filter(v=>rank(v)===r);if(!vs.length)return;
+    const h=document.createElement("div");h.className="pick-h";h.textContent=titulo;lista.appendChild(h);
+    vs.forEach(v=>{const b=document.createElement("button");b.type="button";b.className="pick-item";
+      b.innerHTML=`<span>${v.e}</span><b>${esc(v.t.replace(/^Vale\s+/,""))}</b>`;b.addEventListener("click",()=>openPhoto(v,true));lista.appendChild(b)});
+  });
+  x.appendChild(lista);a.append(btn("Fechar","ghost",closeSheet));sheet.hidden=false;
 }
 async function renderAlbum(){
   const book=document.getElementById("book");book.innerHTML="";
@@ -643,10 +675,12 @@ async function renderAlbum(){
     if(!state.senha){render();return}
     li.innerHTML=`<p class="empty">Não consegui abrir o álbum agora. Confira a internet.</p>`;li.appendChild(btn("Tentar de novo","ghost",()=>{fotosCache=null;render()}));return}
   if(filter!=="album")return;
-  if(!fotos.length){li.innerHTML=`<p class="empty">O álbum ainda está em branco. Depois de usar um vale, toque em “📷 Registrar o momento”.</p>`;return}
+  const addBtn=()=>btn("📷 Adicionar fotos","primary",openPicker);
+  if(!fotos.length){li.innerHTML=`<p class="empty">O álbum ainda está em branco. Toque abaixo para colocar as primeiras fotos.</p>`;li.appendChild(addBtn());return}
   const grupos=[];const idx={};
   fotos.forEach(f=>{if(!(f.vale_id in idx)){idx[f.vale_id]=grupos.length;grupos.push({id:f.vale_id,t:f.vale_titulo,fotos:[]})}grupos[idx[f.vale_id]].fotos.push(f)});
   li.innerHTML=`<div class="album-head"><b>${fotos.length} ${fotos.length===1?"foto":"fotos"}</b> · ${grupos.length} ${grupos.length===1?"momento":"momentos"}</div>`;
+  li.appendChild(addBtn());
   grupos.forEach(g=>{
     const v=find(g.id);const sec=document.createElement("section");sec.className="moment";
     const d=new Date(g.fotos[0].created_at);
@@ -661,7 +695,7 @@ async function renderAlbum(){
 }
 const viewer=document.createElement("div");viewer.className="viewer";viewer.hidden=true;document.body.appendChild(viewer);
 function openViewer(f){
-  viewer.innerHTML=`<img src="${f.url}" alt=""><div class="v-bar"><span>${esc(f.legenda||"")}</span></div>`;
+  viewer.innerHTML=`<img src="${f.url}" alt=""><div class="v-bar"><span>${esc(f.legenda||"")}${f.autor?`<small class="v-by">postada por ${esc(f.autor)}</small>`:""}</span></div>`;
   const bar=viewer.querySelector(".v-bar");
   const del=btn("Apagar","ghost v-del",()=>{
     del.remove();const c=document.createElement("span");c.className="v-confirm";c.textContent="Apagar mesmo?";
