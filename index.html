@@ -246,7 +246,7 @@ const CATS = [
   {id:"aventura", n:"Aventuras"},
   {id:"casa", n:"Em casa"}
 ];
-const UNLOCK = {"ilhagrande": 0, "corcovado": 0, "pao": 0, "musa": 0, "arpoador": 0, "cafe": 0, "filme": 0, "massagem": 0, "cartinha": 0, "diasim": 0, "grumari": 1, "skylab": 0, "jogos": 1, "nusa": 0, "doces": 2, "presente": 2, "paraty": 3, "piquenique": 3, "domingo": 3, "camolese": 0, "surpresa": 4, "xian": 0, "radical": 5, "louca": 5, "buzios": 6, "offline": 6, "bira": 0, "tematico": 0, "senado": 0, "gps": 8, "nada": 8, "arraial": 9, "turistas": 9, "flordoceu": 0, "aventura": 10, "desculpas": 11, "coringa": 11, "sitio": 0, "pontal": 0, "mam": 0, "mar": 1, "theatro": 2, "mac": 4, "ccbb": 5, "bhering": 7};
+const UNLOCK = {"ilhagrande": 0, "corcovado": 0, "pao": 0, "musa": 0, "arpoador": 0, "cafe": 0, "filme": 0, "massagem": 0, "cartinha": 0, "diasim": 0, "grumari": 1, "skylab": 0, "jogos": 1, "nusa": 0, "doces": 2, "presente": 2, "paraty": 3, "piquenique": 3, "domingo": 3, "camolese": 0, "surpresa": 4, "xian": 0, "radical": 5, "louca": 5, "buzios": 6, "offline": 6, "bira": 0, "tematico": 0, "senado": 0, "gps": 8, "nada": 8, "arraial": 9, "turistas": 9, "flordoceu": 0, "aventura": 10, "desculpas": 11, "coringa": 11, "sitio": 0, "pontal": 0, "mam": 0, "mar": 1, "theatro": 2, "mac": 4, "ccbb": 5, "bhering": 7, "museunacional": 0};
 const VALES = [
   {c:"escapada", id:"ilhagrande", e:"🏝️", t:"Vale um fim de semana na Ilha Grande", d:"Barco saindo de Angra ou Conceição de Jacareí, praia de Lopes Mendes e pousada pé na areia. Você escolhe a data, eu reservo."},
   {c:"escapada", id:"paraty", e:"⛵", t:"Vale um fim de semana em Paraty", d:"Centro histórico de pedra, passeio de escuna pelas ilhas e jantar à luz de vela."},
@@ -260,6 +260,7 @@ const VALES = [
   {c:"postal", id:"piquenique", e:"🧺", t:"Vale um piquenique no Parque Lage com tudo preparado por mim", d:"Toalha, cesta montada e comidinhas que você gosta. Você só aparece."},
   {c:"postal", id:"turistas", e:"📸", t:"Vale um dia de turistas no Rio, com câmera, mapa e tudo", d:"Roteiro de quem acabou de chegar: museu, mirante, comida típica e muita foto."},
 
+  {c:"cultura", id:"museunacional", e:"🦕", t:"Vale uma visita ao Museu Nacional, na Quinta da Boa Vista", d:"O palácio reaberto com duas exposições: os bastidores da ciência do museu e a mostra do Vik Muniz feita com as cinzas do incêndio. Gratuito, de terça a domingo. Corre: a temporada vai só até 25/10!"},
   {c:"cultura", id:"sitio", e:"🌿", t:"Vale uma visita guiada ao Sítio Burle Marx", d:"Patrimônio da Unesco a uns 20 minutos de casa, em Guaratiba. Visita guiada de 1h30, de terça a sábado. Precisa agendar, e o ingresso é pago em dinheiro."},
   {c:"cultura", id:"pontal", e:"🪆", t:"Vale uma tarde no Museu do Pontal", d:"Arte popular brasileira num prédio lindo na Barra, de quinta a domingo. Entrada gratuita, com contribuição sugerida."},
   {c:"cultura", id:"mam", e:"🏛️", t:"Vale uma exposição no MAM e fim de tarde nos jardins do Aterro", d:"Entrada gratuita, de quarta a domingo. Depois, pôr do sol no Aterro com o Pão de Açúcar de frente."},
@@ -451,7 +452,7 @@ const TIKTOK={ilhagrande:"Ilha Grande RJ",paraty:"Paraty RJ",buzios:"Búzios RJ"
  piquenique:"piquenique Parque Lage",musa:"Musa São Conrado",nusa:"Nusa Café Ipanema",skylab:"Skylab Copacabana",
  camolese:"Casa Camolese",xian:"Xian restaurante Rio",bira:"Bira Guaratiba",flordoceu:"Flor do Céu restaurante Rio",
  senado:"Armazém Senado Rua do Senado",
- sitio:"Sítio Burle Marx",pontal:"Museu do Pontal",mam:"MAM Rio",mar:"Museu de Arte do Rio MAR",theatro:"visita guiada Theatro Municipal Rio",
+ museunacional:"Museu Nacional Vik Muniz",sitio:"Sítio Burle Marx",pontal:"Museu do Pontal",mam:"MAM Rio",mar:"Museu de Arte do Rio MAR",theatro:"visita guiada Theatro Municipal Rio",
  mac:"MAC Niterói barca",ccbb:"Real Gabinete Português de Leitura",bhering:"Fábrica Bhering",turistas:"o que fazer no Rio de Janeiro"};
 const RESERVA={
  corcovado:["Comprar ingresso do trem","https://www.tremdocorcovado.rio/comprar"],
@@ -461,6 +462,7 @@ const RESERVA={
  flordoceu:["Reservar mesa (obrigatório)","https://flordoceu.leadsfood.app"],
  senado:["Ligar para reservar o Lilia","tel:+552138525423"],
  xian:["Ligar para reservar","tel:+552123037080"],
+ museunacional:["Pegar ingresso gratuito","https://www.sympla.com.br/evento/exposicoes-temporarias-no-museu-nacional-2026/3462785"],
  sitio:["Agendar a visita","https://sitio-roberto-burle-marx.reservio.com/"],
  pontal:["Pegar ingresso gratuito","https://museudopontal.org.br/visite/"],
  mam:["Reservar ingresso gratuito","https://mamrio.byinti.com/#/ticket/"],
