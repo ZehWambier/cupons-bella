@@ -148,6 +148,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;line-height:1.5}
   display:grid;place-items:center;font-size:64px;box-shadow:0 10px 0 #00000026;max-width:100%}
 .intro h2{font-family:var(--display);font-size:clamp(28px,8vw,38px);line-height:1;margin:0;text-wrap:balance}
 .intro p{font-family:var(--hand);font-size:25px;line-height:1.2;margin:0;max-width:30ch}
+.intro .wise{font-family:var(--display);font-size:15px;letter-spacing:.14em;text-transform:uppercase;border:2px solid var(--cream);border-radius:99px;padding:6px 14px}
 .intro .sig{font-family:var(--hand);font-size:24px;opacity:.9}
 .seal-btn{font:inherit;font-family:var(--display);font-size:17px;letter-spacing:.06em;background:var(--cream);color:var(--red);border:0;border-radius:99px;padding:16px 28px;cursor:pointer;
   box-shadow:0 6px 0 #00000033}
@@ -172,15 +173,16 @@ footer{font-size:12px;color:var(--muted);text-align:center;line-height:1.5}
 
   <ul class="book" id="book"></ul>
 
-  <footer>Válido até 08.10.2027 · Cada cupom pode ser usado uma vez · Toque num cupom para abrir</footer>
+  <footer>Use com sabedoria · Válido até 08.10.2027 · Cada cupom pode ser usado uma vez</footer>
 </div>
 
 
 <div class="intro" id="intro" hidden>
   <div class="photo" id="intro-photo">❤️</div>
-  <h2>Feliz aniversário de casamento, Bella</h2>
-  <p>Mais um ano escolhendo você todos os dias. Esse talão é pra gente continuar colecionando dias bons juntos. Alguns vales já estão liberados, os outros vão chegando ao longo do ano.</p>
-  <div class="sig">Com amor, Zé</div>
+  <h2>Feliz dia 8 de outubro, meu amor</h2>
+  <p>Mais um ano escolhendo você todos os dias, e te enchendo o saco. Esse bloco de cupons é pra gente continuar colecionando dias bons juntos. Alguns vales já estão liberados, os outros vão chegando ao longo do ano.</p>
+  <div class="wise">Use com sabedoria</div>
+  <div class="sig">Com amor, titi.</div>
   <button class="seal-btn" id="open-seal">Rasgar o lacre</button>
 </div>
 <div class="sheet" id="sheet" hidden>
@@ -268,7 +270,7 @@ function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;
 function renderCover(){
   document.getElementById("cover-slot").innerHTML=`<li><div class="ticket cover" role="img" aria-label="Parabéns, cupons da Bella">${stub}
     <div class="text"><span class="kicker">PARABÉNS</span><span class="big">CUPONS<br>${NAME}</span>
-    <span class="rule">Regra: cada cupom só pode ser usado uma vez</span></div>
+    <span class="rule">Use com sabedoria · cada cupom vale uma vez</span></div>
     <div class="seal">${sealSVG}<i>❤️</i></div></div></li>`;
 }
 
